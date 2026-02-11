@@ -1,7 +1,7 @@
 export type ColorMode = "bw" | "color";
 
 export interface GenerateOptions {
-  image: HTMLImageElement;
+  image: HTMLImageElement | HTMLCanvasElement;
   text: string;
   colorMode: ColorMode;
   fontSize?: number;
@@ -45,11 +45,34 @@ export function generateTextPortrait(
   const cellW = fontSize * 0.6; // monospace char width approximation
   const cellH = fontSize;
 
+  // Safeguard: Downscale huge images to prevent memory/GPU issues
+  const MAX_DIMENSION = 4096;
+  let sourceImage: CanvasImageSource = image;
+  let srcW = image.width;
+  let srcH = image.height;
+
+  if (srcW > MAX_DIMENSION || srcH > MAX_DIMENSION) {
+    const ratio = Math.min(MAX_DIMENSION / srcW, MAX_DIMENSION / srcH);
+    const tempW = Math.floor(srcW * ratio);
+    const tempH = Math.floor(srcH * ratio);
+
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = tempW;
+    tempCanvas.height = tempH;
+    const tCtx = tempCanvas.getContext("2d");
+    if (tCtx) {
+      tCtx.drawImage(image, 0, 0, tempW, tempH);
+      sourceImage = tempCanvas;
+      srcW = tempW;
+      srcH = tempH;
+    }
+  }
+
   // Figure out grid dimensions based on image aspect ratio
   const maxGridCols = Math.floor(800 / cellW); // reasonable max
-  const aspectRatio = image.height / image.width;
+  const aspectRatio = srcH / srcW;
 
-  let cols = Math.min(Math.floor(image.width / 2), maxGridCols);
+  let cols = Math.min(Math.floor(srcW / 2), maxGridCols);
   let rows = Math.floor(cols * aspectRatio * (cellW / cellH));
 
   // Clamp rows
@@ -60,7 +83,7 @@ export function generateTextPortrait(
 
   sampleCanvas.width = cols;
   sampleCanvas.height = rows;
-  sCtx.drawImage(image, 0, 0, cols, rows);
+  sCtx.drawImage(sourceImage, 0, 0, cols, rows);
   const imageData = sCtx.getImageData(0, 0, cols, rows);
   const pixels = imageData.data;
 

@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Upload, Download, Sparkles, ImageIcon, Type, Palette, Maximize2, X } from "lucide-react";
+import { Upload, Download, Sparkles, ImageIcon, Type, Palette, Maximize2, X, Trash2 } from "lucide-react";
 import { generateTextPortrait, FONT_OPTIONS, type ColorMode } from "@/lib/text-portrait";
 
-const DEFAULT_TEXT = `The quick brown fox jumps over the lazy dog. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`;
+const DEFAULT_TEXT = ``;
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_TEXT_LENGTH = 10000;
 
 export default function Home() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -23,6 +26,10 @@ export default function Home() {
 
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) return;
+    if (file.size > MAX_FILE_SIZE) {
+      alert("File size exceeds 5MB limit.");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (e) => {
       setImageSrc(e.target?.result as string);
@@ -99,9 +106,7 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-[#bcd9ff] bg-white/70 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-[#599fff] flex items-center justify-center shadow-sm">
-            <Type className="h-5 w-5 text-white" />
-          </div>
+          <img src="/images/logo-textura-removedbg.png" alt="Textura Logo" className="h-10 w-auto object-contain" />
           <div>
             <h1 className="text-lg font-semibold tracking-tight text-slate-800">Textura</h1>
             <p className="text-xs text-slate-400">Transform images into text art</p>
@@ -126,13 +131,12 @@ export default function Home() {
               onDragLeave={() => setDragOver(false)}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`relative cursor-pointer rounded-xl border-2 border-dashed transition-all duration-200 ${
-                dragOver
-                  ? "border-[#599fff] bg-[#d9e9ff]"
-                  : imageSrc
+              className={`relative cursor-pointer rounded-xl border-2 border-dashed transition-all duration-200 ${dragOver
+                ? "border-[#599fff] bg-[#d9e9ff]"
+                : imageSrc
                   ? "border-[#bcd9ff] bg-white"
                   : "border-[#bcd9ff] bg-white hover:border-[#8ec2ff] hover:bg-[#eef5ff]"
-              } ${imageSrc ? "p-2" : "p-12"}`}
+                } ${imageSrc ? "p-2" : "p-12"}`}
             >
               {imageSrc ? (
                 <img
@@ -171,8 +175,9 @@ export default function Home() {
                   setResultUrl(null);
                   if (fileInputRef.current) fileInputRef.current.value = "";
                 }}
-                className="text-xs text-slate-400 hover:text-[#599fff] transition-colors"
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 hover:border-red-300 cursor-pointer"
               >
+                <Trash2 className="h-4 w-4" />
                 Remove image
               </button>
             )}
@@ -186,11 +191,15 @@ export default function Home() {
             </label>
             <textarea
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => setText(e.target.value.slice(0, MAX_TEXT_LENGTH))}
+              maxLength={MAX_TEXT_LENGTH}
               placeholder="Enter text to form the portrait..."
               rows={5}
               className="w-full rounded-xl border border-[#bcd9ff] bg-white px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#599fff]/20 focus:border-[#8ec2ff] resize-none transition-all"
             />
+            <div className="text-right text-xs text-slate-400">
+              {text.length}/{MAX_TEXT_LENGTH}
+            </div>
 
             {/* Color Mode */}
             <div className="space-y-2">
@@ -201,21 +210,19 @@ export default function Home() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setColorMode("bw")}
-                  className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${
-                    colorMode === "bw"
-                      ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
-                      : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
-                  }`}
+                  className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${colorMode === "bw"
+                    ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
+                    : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
+                    }`}
                 >
                   Black & White
                 </button>
                 <button
                   onClick={() => setColorMode("color")}
-                  className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${
-                    colorMode === "color"
-                      ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
-                      : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
-                  }`}
+                  className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${colorMode === "color"
+                    ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
+                    : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
+                    }`}
                 >
                   Original Color
                 </button>
@@ -257,11 +264,10 @@ export default function Home() {
                       <button
                         key={font.value}
                         onClick={() => setFontFamily(font.value)}
-                        className={`rounded-lg border px-3 py-2 text-sm transition-all text-left ${
-                          fontFamily === font.value
-                            ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
-                            : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
-                        }`}
+                        className={`rounded-lg border px-3 py-2 text-sm transition-all text-left ${fontFamily === font.value
+                          ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
+                          : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
+                          }`}
                       >
                         <span style={{ fontFamily: font.value }}>{font.label}</span>
                       </button>
@@ -276,11 +282,10 @@ export default function Home() {
                       <button
                         key={font.value}
                         onClick={() => setFontFamily(font.value)}
-                        className={`rounded-lg border px-3 py-2 text-sm transition-all text-left ${
-                          fontFamily === font.value
-                            ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
-                            : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
-                        }`}
+                        className={`rounded-lg border px-3 py-2 text-sm transition-all text-left ${fontFamily === font.value
+                          ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
+                          : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
+                          }`}
                       >
                         <span style={{ fontFamily: font.value }}>{font.label}</span>
                       </button>
@@ -295,11 +300,10 @@ export default function Home() {
                       <button
                         key={font.value}
                         onClick={() => setFontFamily(font.value)}
-                        className={`rounded-lg border px-3 py-2 text-sm transition-all text-left ${
-                          fontFamily === font.value
-                            ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
-                            : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
-                        }`}
+                        className={`rounded-lg border px-3 py-2 text-sm transition-all text-left ${fontFamily === font.value
+                          ? "border-[#599fff] bg-[#599fff] text-white shadow-sm"
+                          : "border-[#bcd9ff] bg-white text-slate-600 hover:border-[#8ec2ff]"
+                          }`}
                       >
                         <span style={{ fontFamily: font.value }}>{font.label}</span>
                       </button>
@@ -421,7 +425,10 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-[#bcd9ff] bg-white/70 mt-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-center">
-          <p className="text-xs text-slate-400">Textura &mdash; Typographic art, made simple.</p>
+          <p className="text-xs text-slate-400 mb-1">Textura &mdash; Typographic art, made simple.</p>
+          <p className="text-xs text-slate-400 opacity-60">
+            &copy; {new Date().getFullYear()} Textura. All rights reserved. Build with 💙 by <a href="https://github.com/Dani9809" target="_blank" rel="noopener noreferrer">Dani9809</a>
+          </p>
         </div>
       </footer>
     </div>
