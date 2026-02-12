@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Upload, Download, Sparkles, ImageIcon, Type, Palette, Maximize2, X, Trash2 } from "lucide-react";
+import { Upload, Download, Sparkles, ImageIcon, Type, Palette, Maximize2, X, Trash2, ChevronDown } from "lucide-react";
 import { generateTextPortrait, FONT_OPTIONS, type ColorMode } from "@/lib/text-portrait";
 
 const DEFAULT_TEXT = ``;
@@ -93,13 +93,24 @@ export default function Home() {
     }
   }, [expanded]);
 
-  const handleDownload = useCallback(() => {
-    if (!resultUrl) return;
-    const a = document.createElement("a");
-    a.href = resultUrl;
-    a.download = "textura-portrait.png";
-    a.click();
-  }, [resultUrl]);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const [showFullscreenDownloadMenu, setShowFullscreenDownloadMenu] = useState(false);
+
+  const handleDownload = useCallback((format: "png" | "jpeg" = "png") => {
+    if (!canvasRef.current) return;
+
+    // Create a temporary link
+    const link = document.createElement('a');
+    link.download = `textura-portrait.${format === 'jpeg' ? 'jpg' : format}`;
+    // Quality 0.9 for jpeg
+    link.href = canvasRef.current.toDataURL(`image/${format}`, 0.9);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setShowDownloadMenu(false);
+    setShowFullscreenDownloadMenu(false);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#eef5ff] text-slate-800">
@@ -352,13 +363,38 @@ export default function Home() {
                   <Maximize2 className="h-4 w-4" />
                   Expand
                 </button>
-                <button
-                  onClick={handleDownload}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#599fff] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#4a8fe8] shadow-sm"
-                >
-                  <Download className="h-4 w-4" />
-                  Download PNG
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#599fff] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#4a8fe8] shadow-sm"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download
+                    <ChevronDown className="h-3 w-3 opacity-80" />
+                  </button>
+                  {showDownloadMenu && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setShowDownloadMenu(false)}
+                      />
+                      <div className="absolute right-0 top-full mt-1 w-32 rounded-lg border border-[#bcd9ff] bg-white shadow-xl z-20 overflow-hidden flex flex-col py-1">
+                        <button
+                          onClick={() => handleDownload("png")}
+                          className="px-4 py-2 text-left text-sm text-slate-600 hover:bg-[#eef5ff] hover:text-[#599fff] transition-colors"
+                        >
+                          As PNG
+                        </button>
+                        <button
+                          onClick={() => handleDownload("jpeg")}
+                          className="px-4 py-2 text-left text-sm text-slate-600 hover:bg-[#eef5ff] hover:text-[#599fff] transition-colors"
+                        >
+                          As JPG
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
             <div className="relative group rounded-xl border border-[#bcd9ff] bg-white p-2 overflow-auto shadow-sm">
@@ -390,15 +426,49 @@ export default function Home() {
             >
               <X className="h-6 w-6" />
             </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDownload();
-              }}
-              className="absolute top-6 right-20 p-2.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all z-10"
-            >
-              <Download className="h-6 w-6" />
-            </button>
+            <div className="absolute top-6 right-20 z-20">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowFullscreenDownloadMenu(!showFullscreenDownloadMenu);
+                }}
+                className="p-2.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all flex items-center justify-center gap-1"
+              >
+                <Download className="h-6 w-6" />
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {showFullscreenDownloadMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-20"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowFullscreenDownloadMenu(false);
+                    }}
+                  />
+                  <div className="absolute right-0 top-full mt-2 w-32 rounded-lg border border-white/10 bg-black/80 backdrop-blur-md shadow-xl z-30 overflow-hidden flex flex-col py-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload("png");
+                      }}
+                      className="px-4 py-3 text-left text-sm text-white hover:bg-white/10 transition-colors"
+                    >
+                      As PNG
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload("jpeg");
+                      }}
+                      className="px-4 py-3 text-left text-sm text-white hover:bg-white/10 transition-colors"
+                    >
+                      As JPG
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
             <img
               src={resultUrl}
               alt="Text portrait result expanded"

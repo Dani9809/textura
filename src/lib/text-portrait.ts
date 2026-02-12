@@ -69,15 +69,17 @@ export function generateTextPortrait(
   }
 
   // Figure out grid dimensions based on image aspect ratio
-  const maxGridCols = Math.floor(800 / cellW); // reasonable max
+  // Target roughly 3840px width (since outputScale defaults to 2, we use 1920 as base width)
+  const maxGridCols = Math.floor(1920 / cellW);
   const aspectRatio = srcH / srcW;
 
   let cols = Math.min(Math.floor(srcW / 2), maxGridCols);
   let rows = Math.floor(cols * aspectRatio * (cellW / cellH));
 
-  // Clamp rows
-  if (rows > 600) {
-    rows = 600;
+  // Clamp rows to prevent extremely tall images crashing the browser
+  // 1500 rows @ 2x scale = 3000px height, enough for portrait 4K
+  if (rows > 1500) {
+    rows = 1500;
     cols = Math.floor(rows / aspectRatio / (cellW / cellH));
   }
 

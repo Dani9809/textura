@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { VisualEditsMessenger } from "orchids-visual-edits";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,21 +52,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    return (
-      <html lang="en">
-        <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Sacramento&family=Caveat:wght@400;700&family=Satisfy&family=Petit+Formal+Script&family=Playfair+Display:ital,wght@0,400;1,400&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Lobster&family=Raleway:wght@300;400&family=Indie+Flower&display=swap"
-            rel="stylesheet"
-          />
-        </head>
-        <body
+  return (
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Sacramento&family=Caveat:wght@400;700&family=Satisfy&family=Petit+Formal+Script&family=Playfair+Display:ital,wght@0,400;1,400&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Lobster&family=Raleway:wght@300;400&family=Indie+Flower&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        <VisualEditsMessenger />
+
       </body>
     </html>
   );
