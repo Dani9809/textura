@@ -26,6 +26,38 @@ Textura is a modern web application that transforms your images into stunning te
 -   **Theming**: [next-themes](https://github.com/pacocoursey/next-themes)
 -   **Icons**: [Lucide React](https://lucide.dev/)
 
+## Architecture
+
+The project follows a modular architecture to ensure scalability and maintainability.
+
+### Directory Structure
+
+```
+src/
+├── app/
+│   ├── globals.css      # Global styles and theme variables
+│   ├── layout.tsx       # Root layout with ThemeProvider
+│   └── page.tsx         # Main page composition
+├── components/
+│   ├── controls/        # Interactive UI components (ImageUpload, TextControls)
+│   ├── layout/          # Structural components (Header, Footer)
+│   ├── preview/         # Result display and interaction (PortraitPreview)
+│   ├── mode-toggle.tsx  # Dark/Light mode switcher
+│   └── theme-provider.tsx # Next-themes wrapper
+├── hooks/
+│   ├── use-text-portrait.ts # Core logic for generation state and processing
+│   └── use-zoom-pan.ts      # Logic for interactive image viewing
+└── lib/
+    ├── text-portrait.ts # Core image-to-text conversion algorithm
+    └── utils.ts         # Utility functions
+```
+
+### Key Components
+
+-   **`useTextPortrait`**: A custom hook that encapsulates the entire state machine for the application (inputs, settings, generation status, result).
+-   **`text-portrait.ts`**: Contains the pure logic for mapping pixels to characters. It uses an off-screen canvas to process image data without blocking the main thread.
+-   **`PortraitPreview`**: Handles the complex logic of displaying the result, including the fullscreen modal, zoom/pan calculations, and image downloading.
+
 ## Getting Started
 
 Follow these steps to set up the project locally.
