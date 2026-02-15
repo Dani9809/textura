@@ -24,6 +24,10 @@ export function PortraitPreview({ resultUrl, canvasRef }: PortraitPreviewProps) 
         handleMouseMove,
         handleMouseUp,
         handleMouseLeave,
+        handleWheel,
+        handleTouchStart,
+        handleTouchMove,
+        handleTouchEnd,
         setZoom,
         setPan
     } = useZoomPan();
@@ -210,12 +214,16 @@ export function PortraitPreview({ resultUrl, canvasRef }: PortraitPreviewProps) 
                     </div>
 
                     <div
-                        className="overflow-hidden w-full h-full flex items-center justify-center p-4 cursor-grab active:cursor-grabbing"
+                        className="overflow-hidden w-full h-full flex items-center justify-center p-4 cursor-grab active:cursor-grabbing touch-none"
                         style={{ cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
                         onMouseDown={(e) => handleMouseDown(e, pan)}
                         onMouseMove={handleMouseMove}
                         onMouseUp={handleMouseUp}
                         onMouseLeave={handleMouseLeave}
+                        onWheel={handleWheel}
+                        onTouchStart={(e) => handleTouchStart(e, pan)}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <img
