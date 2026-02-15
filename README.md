@@ -5,6 +5,8 @@ Textura is a modern web application that transforms your images into stunning te
 ## Features
 
 -   **Image to Text Conversion**: Sophisticated algorithm that maps image brightness to text opacity.
+-   **Dark/Light Mode**: Seamlessly switch between themes for optimal viewing in any lighting condition.
+-   **Interactive Zoom & Pan**: Deep dive into your creations with smooth zoom and drag-to-pan controls.
 -   **Customization**:
     -   **Text Content**: Use your own text.
     -   **Fonts**: Choose from Script, Elegant Serif, or Modern Sans-Serif styles.
@@ -21,6 +23,7 @@ Textura is a modern web application that transforms your images into stunning te
 -   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
 -   **Language**: [TypeScript](https://www.typescriptlang.org/)
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+-   **Theming**: [next-themes](https://github.com/pacocoursey/next-themes)
 -   **Icons**: [Lucide React](https://lucide.dev/)
 
 ## Getting Started
@@ -69,7 +72,8 @@ Follow these steps to set up the project locally.
     -   Select a font style and color mode.
     -   Adjust the "Text Size" slider.
 3.  **Generate**: Click "Generate Text Portrait".
-4.  **Save**: Click "Download PNG" to save your art.
+4.  **Explore**: Click **Expand** to view in full screen. Use the +/- buttons or scroll to zoom, and drag to pan around the details.
+5.  **Save**: Click "Download" to save your art as PNG or JPG.
 
 ## License
 
