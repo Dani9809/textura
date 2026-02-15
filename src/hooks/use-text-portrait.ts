@@ -52,7 +52,7 @@ export function useTextPortrait() {
         await new Promise((resolve) => requestAnimationFrame(resolve));
 
         try {
-            const canvas = generateTextPortrait(
+            const canvas = await generateTextPortrait(
                 { image: img, text, colorMode, fontSize, fontFamily },
                 (pct) => setProgress(pct)
             );

@@ -4,7 +4,8 @@ Textura is a modern web application that transforms your images into stunning te
 
 ## Features
 
--   **Image to Text Conversion**: Sophisticated algorithm that maps image brightness to text opacity.
+-   **Image to Text Conversion**: Sophisticated algorithm that maps image brightness to text opacity, with **intelligent dynamic scaling** to ensure crisp text even at small sizes.
+-   **Live Generation Progress**: Real-time progress bar powered by non-blocking async processing for a smooth user experience.
 -   **Dark/Light Mode**: Seamlessly switch between themes for optimal viewing in any lighting condition.
 -   **Interactive Zoom & Pan**: Deep dive into your creations with smooth zoom and drag-to-pan controls.
 -   **Customization**:
@@ -16,7 +17,7 @@ Textura is a modern web application that transforms your images into stunning te
     -   **Smart Downscaling**: Automatically handles high-resolution images (up to 4K+) without crashing.
     -   **Input Limits**: Enforces a 5MB entry limit and 10,000 character text limit for smooth performance.
 -   **Privacy**: All processing happens client-side. Your images are never uploaded to a server.
--   **Export**: Download your creation as a high-quality PNG.
+-   **Export**: Download your creation as a high-quality PNG or JPG.
 
 ## Tech Stack
 
